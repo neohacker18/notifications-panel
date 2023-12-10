@@ -2,7 +2,7 @@
 
 const about = () => {
   return (
-    <></>
+    <>1</>
   );
 };
 
