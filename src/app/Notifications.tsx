@@ -165,7 +165,7 @@ const Notifications: React.FC = () => {
                 >
                   <MessageCard notification={notification} />
                   <div
-                    className="bg-blue-100 px-3 py-3"
+                    className="bg-blue-300 px-3 py-3"
                     style={{
                       borderRadius: 2,
                       width: "70%",
