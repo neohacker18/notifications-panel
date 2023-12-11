@@ -25,11 +25,11 @@ export type Notification = {
   action: Action | null;
   message: string | null;
   media: string | null;
-  created_at: string; 
+  created_at: string;
   unread?: boolean;
 };
 
-const Notifications : React.FC= () => {
+const Notifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unread, setUnread] = useState<number>(0);
   useEffect(() => {
@@ -44,10 +44,19 @@ const Notifications : React.FC= () => {
         ws.addEventListener("message", (event) => {
           const newNotification = JSON.parse(event.data);
           newNotification["unread"] = true;
-          setNotifications((prevNotifications) => [
-            newNotification,
-            ...prevNotifications,
-          ]);
+
+          setNotifications((prevNotifications) => {
+            const updatedNotifications = [
+              newNotification,
+              ...prevNotifications,
+            ];
+
+            updatedNotifications.sort((a, b) =>
+              moment(b.created_at).diff(moment(a.created_at))
+            );
+
+            return updatedNotifications;
+          });
         });
 
         return () => {
@@ -75,7 +84,7 @@ const Notifications : React.FC= () => {
     );
   };
 
-  const handleMakeCardRead = (id:string) => {
+  const handleMakeCardRead = (id: string) => {
     const updatedNotifications = notifications.map((notification) =>
       notification.id === id ? { ...notification, unread: false } : notification
     );
@@ -91,7 +100,7 @@ const Notifications : React.FC= () => {
         padding: 20,
         paddingTop: 10,
       }}
-      className="flex flex-col justify-between sm:w-full md:w-3/5 mt-4 md:mt-0 md:ml-80 border-2 border-white p-4 md:pt-2 bg-white rounded-lg"
+      className="flex flex-col justify-between sm:w-full md:w-3/5 mt-4 md:mt-0 md:ml-[20%] border-2 border-white p-4 md:pt-2 bg-white rounded-lg"
     >
       <div
         style={{
@@ -139,7 +148,9 @@ const Notifications : React.FC= () => {
                     marginBottom: 5,
                     borderRadius: 5,
                   }}
-                  className={`bg-${notification["unread"] ? `blue` : `white`}-50 px-4 py-3 flex mb-4 hover:bg-gray-100 hover:cursor-pointer`}
+                  className={`bg-${
+                    notification["unread"] ? `blue` : `white`
+                  }-100 px-4 py-3 flex mb-4  hover:cursor-pointer`}
                   onClick={() => handleMakeCardRead(notification.id)}
                 >
                   <MediaCard notification={notification} />
@@ -147,7 +158,9 @@ const Notifications : React.FC= () => {
               ) : notification.message ? (
                 <div
                   style={{ display: "flex", flexDirection: "column" }}
-                  className={`bg-${notification["unread"] ? `blue` : `white`}-50 px-4 py-3 flex mb-4 hover:bg-gray-100 hover:cursor-pointer`}
+                  className={`bg-${
+                    notification["unread"] ? `blue` : `white`
+                  }-100 px-4 py-3 flex mb-4  hover:cursor-pointer`}
                   onClick={() => handleMakeCardRead(notification.id)}
                 >
                   <MessageCard notification={notification} />
@@ -172,7 +185,9 @@ const Notifications : React.FC= () => {
                     marginBottom: 5,
                     borderRadius: 5,
                   }}
-                  className={`bg-${notification["unread"] ? `blue` : `white`}-50 px-4 py-3 flex mb-4 hover:bg-gray-100 hover:cursor-pointer`}
+                  className={`bg-${
+                    notification["unread"] ? `blue` : `white`
+                  }-100 px-4 py-3 flex mb-4  hover:cursor-pointer`}
                   onClick={() => handleMakeCardRead(notification.id)}
                 >
                   <NormalNotificationCard notification={notification} />
