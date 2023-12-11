@@ -25,57 +25,73 @@ export type Notification = {
   action: Action | null;
   message: string | null;
   media: string | null;
-  created_at: string;
+  created_at: string; 
+  unread?: boolean;
 };
 
-const Notifications = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [unread, setUnread] = useState(0);
+const Notifications : React.FC= () => {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unread, setUnread] = useState<number>(0);
   useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const res = await axios.get('https://notifications-server.fly.dev/api/token?hiring_secret=m4v3H34l7H-5JJW');
-          const ws = new WebSocket(`wss://notifications-server.fly.dev/ws/notification/?token=${res.data.token}`);
-          ws.addEventListener("message", (event) => {
-            const newNotification = JSON.parse(event.data);
-            newNotification['unread']=true;
-            setNotifications(prevNotifications => [newNotification, ...prevNotifications]);
-          });
-          
-          return () => {
-            ws.close();
-          };
-        } catch (err) {
-          console.error(err);
-        }
-      };
-        fetchData();
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(
+          "https://notifications-server.fly.dev/api/token?hiring_secret=m4v3H34l7H-5JJW"
+        );
+        const ws = new WebSocket(
+          `wss://notifications-server.fly.dev/ws/notification/?token=${res.data.token}`
+        );
+        ws.addEventListener("message", (event) => {
+          const newNotification = JSON.parse(event.data);
+          newNotification["unread"] = true;
+          setNotifications((prevNotifications) => [
+            newNotification,
+            ...prevNotifications,
+          ]);
+        });
+
+        return () => {
+          ws.close();
+        };
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchData();
   }, []);
 
-  useEffect(()=>{
-    setUnread(notifications.filter(notification=>notification.unread).length)
-  },[notifications])
-
-  const handleMarkAllAsReadButton=()=>{
-    setNotifications(prevNotifications =>
-      prevNotifications.map(notification => ({ ...notification, unread: false }))
+  useEffect(() => {
+    setUnread(
+      notifications.filter((notification) => notification.unread).length
     );
-  }
+  }, [notifications]);
+
+  const handleMarkAllAsReadButton = () => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((notification) => ({
+        ...notification,
+        unread: false,
+      }))
+    );
+  };
+
+  const handleMakeCardRead = (id:string) => {
+    const updatedNotifications = notifications.map((notification) =>
+      notification.id === id ? { ...notification, unread: false } : notification
+    );
+    setNotifications(updatedNotifications);
+  };
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        width: "60%",
         marginTop: "2%",
-        marginLeft: "20%",
-        border: "1px solid white",
         padding: 20,
         paddingTop: 10,
-        backgroundColor: "white",
-        borderRadius: 10,
       }}
+      className="flex flex-col justify-between sm:w-full md:w-3/5 mt-4 md:mt-0 md:ml-80 border-2 border-white p-4 md:pt-2 bg-white rounded-lg"
     >
       <div
         style={{
@@ -86,6 +102,7 @@ const Notifications = () => {
           marginBottom: 15,
           alignItems: "center",
         }}
+        className="flex justify-between w-full mt-2 mb-4 md:mb-8 items-center"
       >
         <div
           style={{
@@ -99,10 +116,13 @@ const Notifications = () => {
             className="flex rounded bg-blue-900 uppercase px-2 py-1 text-xs font-bold mr-4"
             style={{ opacity: "80%" }}
           >
-            <p style={{ color: "white" }}>{unread>=100?"100+":unread}</p>
+            <p style={{ color: "white" }}>{unread > 100 ? "100+" : unread}</p>
           </span>
         </div>
-        <button className="bg-transparent text-blue-700 hover:text-black py-2 px-4" onClick={handleMarkAllAsReadButton}>
+        <button
+          className="bg-transparent text-blue-700 hover:text-black py-2 px-4"
+          onClick={handleMarkAllAsReadButton}
+        >
           Mark all as read
         </button>
       </div>
@@ -119,14 +139,16 @@ const Notifications = () => {
                     marginBottom: 5,
                     borderRadius: 5,
                   }}
-                  className={`bg-${notification['unread']?`blue`:`white`}-50 px-4 py-3 flex mb-4 hover:bg-gray-100 hover:cursor-pointer`}
+                  className={`bg-${notification["unread"] ? `blue` : `white`}-50 px-4 py-3 flex mb-4 hover:bg-gray-100 hover:cursor-pointer`}
+                  onClick={() => handleMakeCardRead(notification.id)}
                 >
                   <MediaCard notification={notification} />
                 </div>
               ) : notification.message ? (
                 <div
                   style={{ display: "flex", flexDirection: "column" }}
-                  className={`bg-${notification['unread']?`blue`:`white`}-50 px-4 py-3 flex mb-4 hover:bg-gray-100 hover:cursor-pointer`}
+                  className={`bg-${notification["unread"] ? `blue` : `white`}-50 px-4 py-3 flex mb-4 hover:bg-gray-100 hover:cursor-pointer`}
+                  onClick={() => handleMakeCardRead(notification.id)}
                 >
                   <MessageCard notification={notification} />
                   <div
@@ -150,7 +172,8 @@ const Notifications = () => {
                     marginBottom: 5,
                     borderRadius: 5,
                   }}
-                  className={`bg-${notification['unread']?`blue`:`white`}-50 px-4 py-3 flex mb-4 hover:bg-gray-100 hover:cursor-pointer`}
+                  className={`bg-${notification["unread"] ? `blue` : `white`}-50 px-4 py-3 flex mb-4 hover:bg-gray-100 hover:cursor-pointer`}
+                  onClick={() => handleMakeCardRead(notification.id)}
                 >
                   <NormalNotificationCard notification={notification} />
                 </div>
