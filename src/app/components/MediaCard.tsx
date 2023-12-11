@@ -20,7 +20,7 @@ export type Notification = {
   event: string;
   action: Action | null;
   message: string | null;
-  media: string;
+  media: string|null;
   created_at: string; 
   unread?: boolean;
 };
@@ -63,14 +63,14 @@ const MediaCard :React.FC<{notification:Notification}> = ({ notification }) => {
         </div>
       </div>
       <div className="flex-1 h-12 relative">
-        <img
+        {notification.media?<img
           style={{ borderRadius: 5 }}
           className="absolute inset-y-0 right-0"
           src={notification.media}
           alt=""
           width={50}
           height={50}
-        />
+        />:<></>}
       </div>
       <div className="w-1/7 h-12">
         {notification.message ? (

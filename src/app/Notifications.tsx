@@ -136,7 +136,18 @@ const Notifications: React.FC = () => {
         </button>
       </div>
       <div className="notifications">
-        {notifications &&
+        {notifications.length===0?<div
+                    className="bg-blue-100 px-3 py-3"
+                    style={{
+                      borderRadius: 2,
+                      width: "70%",
+                    }}
+                    >
+                    <p style={{ fontSize: 13, opacity: "80%" }}>
+                      No new notifications
+                    </p>
+                  </div>:
+        
           notifications.map((notification) => (
             <>
               {notification.media ? (
@@ -157,11 +168,11 @@ const Notifications: React.FC = () => {
                 </div>
               ) : notification.message ? (
                 <div
-                  style={{ display: "flex", flexDirection: "column" }}
-                  className={`bg-${
-                    notification["unread"] ? `blue` : `white`
-                  }-100 px-4 py-3 flex mb-4  hover:cursor-pointer`}
-                  onClick={() => handleMakeCardRead(notification.id)}
+                style={{ display: "flex", flexDirection: "column" }}
+                className={`bg-${
+                  notification["unread"] ? `blue` : `white`
+                }-100 px-4 py-3 flex mb-4  hover:cursor-pointer`}
+                onClick={() => handleMakeCardRead(notification.id)}
                 >
                   <MessageCard notification={notification} />
                   <div
@@ -170,7 +181,7 @@ const Notifications: React.FC = () => {
                       borderRadius: 2,
                       width: "70%",
                     }}
-                  >
+                    >
                     <p style={{ fontSize: 13, opacity: "80%" }}>
                       {notification.message}
                     </p>
@@ -178,23 +189,24 @@ const Notifications: React.FC = () => {
                 </div>
               ) : (
                 <div
-                  style={{
-                    justifyContent: "space-between",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginBottom: 5,
-                    borderRadius: 5,
+                style={{
+                  justifyContent: "space-between",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginBottom: 5,
+                  borderRadius: 5,
                   }}
                   className={`bg-${
                     notification["unread"] ? `blue` : `white`
                   }-100 px-4 py-3 flex mb-4  hover:cursor-pointer`}
                   onClick={() => handleMakeCardRead(notification.id)}
-                >
+                  >
                   <NormalNotificationCard notification={notification} />
                 </div>
               )}
             </>
-          ))}
+          ))
+          }
       </div>
     </div>
   );
