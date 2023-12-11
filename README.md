@@ -14,7 +14,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-#### Deployed Vesion Available at 
+#### Deployed Vesion Available at https://mave-health-frontend-assignment.vercel.app/
 
 
 
